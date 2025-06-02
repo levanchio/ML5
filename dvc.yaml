@@ -1,0 +1,33 @@
+stages:
+  clean_data:
+    cmd: python src/clean_data.py --input data/raw/WineDataset.csv --output data/processed/cleaned.csv
+    deps:
+      - data/raw/WineDataset.csv
+      - src/clean_data.py
+    outs:
+      - data/processed/cleaned.csv
+
+  feature_engineering:
+    cmd: python src/feature_engineer.py --input data/processed/cleaned.csv --output data/processed/features.csv
+    deps:
+      - data/processed/cleaned.csv
+      - src/feature_engineer.py
+    outs:
+      - data/processed/features.csv
+
+  train_model:
+    cmd: python src/train_model.py --input data/processed/features.csv --output models/model.joblib
+    deps:
+      - data/processed/features.csv
+      - src/train_model.py
+    outs:
+      - models/model.joblib
+
+  evaluate:
+    cmd: python src/evaluate.py --model models/model.joblib --test-data data/processed/features.csv --metrics metrics.json
+    deps:
+      - models/model.joblib
+      - data/processed/features.csv
+      - src/evaluate.py
+    metrics:
+      - metrics.json
